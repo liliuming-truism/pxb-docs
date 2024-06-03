@@ -11,11 +11,11 @@
 | `xtrabackup_logfile`          | Contains data needed for running the: `--prepare`. The bigger this file is the `--prepare` process will take longer to finish.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `<table_name>.delta.meta`     | This file is going to be created when performing the incremental backup. It contains the per-table delta metadata: page size, size of compressed page (if the value is 0 it means the tablespace isn’t compressed) and space id. Example of this file: `page_size = 16384 zip_size = 0 space_id = 0`                                                                                                                                                                                                                                                                                                                                                      |
 
-* Information related to the replication environment (if using the`--slave-info` option):
+* Information related to the replication environment (if using the`--replica-info` option):
 
-    `xtrabackup_slave_info`
+    `xtrabackup_replica_info`
 
-    The `CHANGE MASTER` statement needed for setting up a replica.
+    The `CHANGE REPLICATION SOURCE TO` statement needed for setting up a replica.
 
 * Information related to the *Galera* and *Percona XtraDB Cluster* (if using the `--galera-info` option):
 

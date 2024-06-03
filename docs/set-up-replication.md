@@ -46,7 +46,7 @@ We use this backup tool. Install Percona XtraBackup on both computers for conven
 
 !!! note
    
-    It is not recommended to mix MySQL variants (Percona Server, MySQL) in your replication setup. This may produce incorrect `xtrabackup_slave_info` file when adding a new replica. 
+    It is not recommended to mix MySQL variants (Percona Server, MySQL) in your replication setup. This may produce incorrect `xtrabackup_replica_info` file when adding a new replica. 
 
 ## 1. Make a backup on the `Source` and prepare it
 
@@ -143,7 +143,7 @@ On the source, run the following command to add the appropriate grant. This
 grant allows the replica to be able to connect to source:
 
 ```{.bash data-prompt="mysql>"}
-mysql> GRANT REPLICATION SLAVE ON *.*  TO 'repl'@'$replicaip'
+mysql> GRANT REPLICATION REPLICA ON *.*  TO 'repl'@'$replicaip'
 IDENTIFIED BY '$replicapass';
 ```
 
@@ -232,12 +232,12 @@ The result shows the status:
 ??? example "Expected output"
 
     ```{.text .no-copy}
-    Slave_IO_Running: Yes
-    Slave_SQL_Running: Yes
-    Seconds_Behind_Master: 13
+    Replica_IO_Running: Yes
+    Replica_SQL_Running: Yes
+    Seconds_Behind_Source: 13
     ```
 
-Both `IO` and `SQL` threads need to be running. The `Seconds_Behind_Master`
+Both `IO` and `SQL` threads need to be running. The `Seconds_Behind_Source`
 means the `SQL` currently being executed has a `current_timestamp` of 13
 seconds ago. It is an estimation of the lag between the `Source` and
 the `Replica`. Note that at the beginning, a high value could be shown
@@ -254,11 +254,11 @@ At the `Replica`, do a full backup:
 
 ```{.bash data-prompt="$"}
 $ xtrabackup --user=yourDBuser --password=MaGiCiGaM \
-   --backup --slave-info --target-dir=/path/to/backupdir
+   --backup --replica-info --target-dir=/path/to/backupdir
 ```
 
-By using the `--slave-info` *Percona XtraBackup* creates additional file
-called `xtrabackup_slave_info`.
+By using the `--replica-info` *Percona XtraBackup* creates additional file
+called `xtrabackup_replica_info`.
 
 Apply the logs:
 
@@ -284,7 +284,7 @@ For example, to set up a new user, `user2`, you add another grant on
 the Source:
 
 ```{.bash data-prompt=">"}
-> GRANT REPLICATION SLAVE ON *.*  TO 'user2'@'$newreplicaip'
+> GRANT REPLICATION REPLICA ON *.*  TO 'user2'@'$newreplicaip'
  IDENTIFIED BY '$replicapass';
 ```
 
@@ -298,14 +298,14 @@ Make sure you change the server-id variable in `/etc/mysql/my.cnf` to 3 and
 disable the replication on start:
 
 ```
-skip-slave-start
+skip-replica-start
 server-id=3
 ```
 
 After setting `server_id`, start mysqld.
 
 Fetch the source_log_file and source_log_pos from the
-file `xtrabackup_slave_info`, execute the statement for setting up the
+file `xtrabackup_replica_info`, execute the statement for setting up the
 source and the log file for the NewReplica:
 
 ```sql
@@ -328,6 +328,6 @@ server is replicating the `Source`.
 
 !!! admoniton "See also"
 
-    [How to create a new (or repair a broken) GTID based slave](create-gtid-replica.md)
+    [How to create a new (or repair a broken) GTID based replica](create-gtid-replica.md)
 
 [MySQL Configuration Utility]: https://dev.mysql.com/doc/refman/{{vers}}/en/mysql-config-editor.html

@@ -600,7 +600,7 @@ Enabled by default to ensure that any DDL event does not corrupt the backup. Any
 
 If the option is disabled, a backup continues while concurrent DDL events are executed. These backups are invalid and fail in the Prepare step.
 
-Use a [safe-slave-backup](#safe-slave-backup) option to stop a SQL replica thread before copying the InnoDB files.
+Use a [safe-replica-backup](#safe-replica-backup) option to stop a SQL replica thread before copying the InnoDB files.
 
 ### lock-ddl-per-table
 
@@ -685,7 +685,7 @@ non-InnoDB data to avoid blocking DML queries that modify InnoDB tables.
 
 If you consider using this option because your backups fail to acquire
 the lock, maybe incoming replication events prevent
-the lock from succeeding. Try the `--safe-slave-backup` option to stop the replication replica thread momentarily. The `--safe-slave-backup` option may help the backup to succeed and avoid using this option.
+the lock from succeeding. Try the `--safe-replica-backup` option to stop the replication replica thread momentarily. The `--safe-replica-backup` option may help the backup to succeed and avoid using this option.
 
 ### no-server-version-check
 
@@ -838,25 +838,25 @@ Uses the rsync utility to optimize local file transfers. The xtrabackup binary u
 
 You cannot use this option with [`--stream`](#stream).
 
-### safe-slave-backup
+### safe-replica-backup
 
-Usage: `--safe-slave-backup`
+Usage: `--safe-replica-backup`
 
 When specified, xtrabackup stops the replica SQL thread just before
-running `FLUSH TABLES WITH READ LOCK` and waits to start the backup operation until `Slave_open_temp_tables`` in `SHOW STATUS` is zero.
+running `FLUSH TABLES WITH READ LOCK` and waits to start the backup operation until `Replica_open_temp_tables`` in `SHOW STATUS` is zero.
 
-If there are no open temporary tables, the backup takes place, otherwise the SQL thread is started and stopped until there are no open temporary tables. The backup fails if `Slave_open_temp_tables` does not become zero after
-[`--safe-slave-backup-timeout`](#safe-slave-backup-timeout
+If there are no open temporary tables, the backup takes place, otherwise the SQL thread is started and stopped until there are no open temporary tables. The backup fails if `Replica_open_temp_tables` does not become zero after
+[`--safe-replica-backup-timeout`](#safe-replica-backup-timeout
 ) seconds. The replication SQL thread is restarted when the backup is complete.
-This option is implemented to deal with [replication and temporary tables](https://dev.mysql.com/doc/refman/8.0/en/replication-features-temptables.html) and isn’t necessary with row-based replication.
+This option is implemented to deal with [replication and temporary tables](https://dev.mysql.com/doc/refman/{{vers}}/en/replication-features-temptables.html) and isn’t necessary with row-based replication.
 
-Using a safe-slave-backup option stops the SQL replica thread before copying the InnoDB files.
+Using a safe-replica-backup option stops the SQL replica thread before copying the InnoDB files.
 
-### safe-slave-backup-timeout
+### safe-replica-backup-timeout
 
-Usage: `--safe-slave-backup-timeout=SECONDS`
+Usage: `--safe-replica-backup-timeout=SECONDS`
 
-How many seconds the `--safe-slave-backup` option waits for the `Slave_open_temp_tables` to become zero. The default value is 300 seconds.
+How many seconds the `--safe-replic-backup` option waits for the `Replic_open_temp_tables` to become zero. The default value is 300 seconds.
 
 ### secure-auth
 
@@ -882,17 +882,17 @@ Usage: `--skip-tables-compatibility-check`
 
 See [`--tables-compatibility-check`](#tables-compatibility-check).
 
-### slave-info
+### replica-info
 
-Usage: `--slave-info`
+Usage: `--replica-info`
 
 This option is useful when backing up a replication replica server. It prints
 the binary log position of the source server. It also writes the binary log
-coordinates to the `xtrabackup_slave_info` file as a [`CHANGE MASTER`](https://dev.mysql.com/doc/refman/8.3/en/change-master-to.html)
+coordinates to the `xtrabackup_replica_info` file as a [`CHANGE REPLICATION SOURCE TO`](https://dev.mysql.com/doc/refman/{{vers}}/en/change-replication-source-to.html)
 command.
 
-A new replica for this source can be set up by starting a replica server on this backup and issuing a [`CHANGE MASTER`](https://dev.mysql.com/doc/refman/8.3/en/change-master-to.html) command with the binary log
-position saved in the `xtrabackup_slave_info` file.
+A new replica for this source can be set up by starting a replica server on this backup and issuing a [`CHANGE REPLICATION SOURCE TO`](https://dev.mysql.com/doc/refman/{{vers}}/en/change-replication-source-to.html) command with the binary log
+position saved in the `xtrabackup_replica_info` file.
 
 ### socket
 
