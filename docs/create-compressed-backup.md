@@ -9,7 +9,7 @@ the `percona-release` package configuration tool as follows:
 ```{.bash data-prompt="$"}
 $ sudo percona-release enable tools
 $ sudo apt update
-$ sudo apt install zstandard
+$ sudo apt install zstd
 ```
 
 !!! note
